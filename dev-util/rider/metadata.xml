@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+<maintainer type="person">
+	<email>spectere@gmail.com</email>
+	<name>Ian Burgmyer</name>
+</maintainer>
+<longdescription lang="en">
+	A cross-platform .NET IDE based on the IntelliJ platform and ReSharper.
+</longdescription>
+<use>
+	<flag name="custom-jre">Install and use Rider's included JRE.</flag>
+</use>
+</pkgmetadata>
