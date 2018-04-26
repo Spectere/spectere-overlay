@@ -8,7 +8,7 @@ inherit eutils
 
 DESCRIPTION="A cross-platform .NET IDE based on the IntelliJ platform and ReSharper."
 HOMEPAGE="https://www.jetbrains.com/rider/"
-SRC_URI="https://download.jetbrains.com/resharper/JetBrains.Rider-${PV}.tar.gz"
+SRC_URI="https://download.jetbrains.com/rider/JetBrains.Rider-${PV}.tar.gz"
 
 LICENSE="IDEA || ( IDEA_Academic IDEA_Classroom IDEA_OpenSource IDEA_Personal )"
 SLOT="2018.1"
