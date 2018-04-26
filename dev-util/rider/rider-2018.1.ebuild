@@ -11,7 +11,7 @@ HOMEPAGE="https://www.jetbrains.com/rider/"
 SRC_URI="https://download.jetbrains.com/resharper/JetBrains.Rider-${PV}.tar.gz"
 
 LICENSE="IDEA || ( IDEA_Academic IDEA_Classroom IDEA_OpenSource IDEA_Personal )"
-SLOT="2017.3"
+SLOT="2018.1"
 KEYWORDS="~amd64"
 IUSE="-bundled-jre"
 
