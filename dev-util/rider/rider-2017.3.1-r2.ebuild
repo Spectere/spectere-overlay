@@ -4,7 +4,7 @@
 EAPI=6
 
 inherit desktop
-inherit eutils
+inherit enhbuild
 
 DESCRIPTION="A cross-platform .NET IDE based on the IntelliJ platform and ReSharper."
 HOMEPAGE="https://www.jetbrains.com/rider/"
@@ -44,7 +44,7 @@ src_install() {
 	fperms 755 "${dir}"/lib/ReSharperHost/{{JetBrains.ReSharper.Host,runtime}.sh,linux-x64/mono/bin/mono-sgen{,-gdb.py}}
 	use bundled-jre && fperms 755 "${dir}"/jre64/bin/{java,jjs,keytool,orbd,pack200,policytool,rmid,rmiregistry,servertool,tnameserv,unpack200}
 
-	make_wrapper "${PN}-${SLOT}" "${dir}/bin/${PN}.sh"
+	make_wrapper_env "${PN}-${SLOT}" "${dir}/bin/${PN}.sh" "" "TERM=\"xterm\""
 	newicon "bin/${PN}.png" "${PN}-${SLOT}.png"
-	make_desktop_entry "${PN}-${SLOT}" "Rider ${SLOT}" "${PN}" "Development;IDE;"
+	make_desktop_entry "${PN}-${SLOT}" "Rider ${SLOT}" "${PN}-${SLOT}" "Development;IDE;"
 }
