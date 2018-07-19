@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+<maintainer type="person">
+	<email>spectere@gmail.com</email>
+	<name>Ian Burgmyer</name>
+</maintainer>
+<longdescription lang="en">
+	Shrew Soft's VPN client.
+</longdescription>
+<use>
+	<flag name="nat">Builds network address translation (NAT) support into Ike.</flag>
+</use>
+</pkgmetadata>

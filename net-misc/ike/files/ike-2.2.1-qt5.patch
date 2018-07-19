@@ -1,0 +1,525 @@
+diff -ruN ike/CMakeLists.txt ike/CMakeLists.txt
+--- ike/CMakeLists.txt	2013-05-01 00:59:02.000000000 -0400
++++ ike/CMakeLists.txt	2018-07-12 09:53:06.503920824 -0400
+@@ -527,17 +527,16 @@
+ 
+ 	add_definitions( -DQT_THREAD_SUPPORT )
+ 
+-	find_package(
+-		Qt4
+-		COMPONENTS QtCore QtGui REQUIRED )
++	find_package(Qt5Core)
++	find_package(Qt5Widgets CONFIG REQUIRED)
+ 
+-	if( NOT QT_QTGUI_FOUND )
++	if( NOT Qt5Widgets_FOUND )
+ 
+ 		message(
+ 			FATAL_ERROR
+ 			"Unable to locate required package : QT" )
+ 
+-	endif( NOT QT_QTGUI_FOUND )
++	endif( NOT Qt5Widgets_FOUND )
+ 		
+ 	# success
+ 
+diff -ruN ike/source/qikea/CMakeLists.txt ike/source/qikea/CMakeLists.txt
+--- ike/source/qikea/CMakeLists.txt	2012-11-28 00:53:09.000000000 -0500
++++ ike/source/qikea/CMakeLists.txt	2018-07-12 09:53:46.674920242 -0400
+@@ -20,9 +20,7 @@
+ 	${IKE_SOURCE_DIR}/source/libip
+ 	${QT_LIBRARY_DIR} )
+ 
+-include( ${QT_USE_FILE} )
+-
+-qt4_wrap_ui(
++qt5_wrap_ui(
+ 	UIH_FILES
+ 	about.ui
+ 	conflict.ui
+@@ -30,11 +28,11 @@
+ 	site.ui
+ 	topology.ui )
+ 
+-qt4_wrap_cpp(
++qt5_wrap_cpp(
+ 	CXX_FILES
+ 	qikea.h )
+ 
+-qt4_add_resources(
++qt5_add_resources(
+ 	QRC_FILES
+ 	qikea.qrc )
+ 
+@@ -57,7 +55,7 @@
+ 	ss_log
+ 	crypto
+ 	pthread
+-	${QT_LIBRARIES} )
++	Qt5::Widgets )
+ 
+ if( APPLE )
+ 
+diff -ruN ike/source/qikea/root.cpp ike/source/qikea/root.cpp
+--- ike/source/qikea/root.cpp	2011-01-10 01:06:37.000000000 -0500
++++ ike/source/qikea/root.cpp	2018-07-12 10:02:42.922912470 -0400
+@@ -45,7 +45,7 @@
+ {
+ 	bdata.del();
+ 
+-	FILE * fp = fopen( path.toAscii(), "rb" );
++	FILE * fp = fopen( path.toLatin1(), "rb" );
+ 	if( fp == NULL )
+ 		return false;
+ 
+@@ -65,7 +65,7 @@
+ 
+ bool bdata_to_file( BDATA & bdata, QString path )
+ {
+-	FILE * fp = fopen( path.toAscii(), "wb" );
++	FILE * fp = fopen( path.toLatin1(), "wb" );
+ 	if( fp == NULL )
+ 		return false;
+ 
+@@ -87,7 +87,7 @@
+ 	QString tmpName = name;
+ 
+ 	CONFIG tmpConfig;
+-	tmpConfig.set_id( name.toAscii() );
++	tmpConfig.set_id( name.toLatin1() );
+ 
+ 	int index = 2;
+ 
+@@ -97,7 +97,7 @@
+ 		name += QString( " (" );
+ 		name += QString::number( index++ );
+ 		name += QString( ")" );
+-		tmpConfig.set_id( name.toAscii() );
++		tmpConfig.set_id( name.toLatin1() );
+ 	}
+ }
+ 
+@@ -220,7 +220,7 @@
+ 	// mangle name if duplicate
+ 
+ 	site_name_mangle( siteName );
+-	config.set_id( siteName.toAscii() );
++	config.set_id( siteName.toLatin1() );
+ 
+ 	// write site config
+ 
+@@ -249,7 +249,7 @@
+ 	// load site config
+ 
+ 	CONFIG config;
+-	config.set_id( i->text().toAscii() );
++	config.set_id( i->text().toLatin1() );
+ 	qikea.manager.file_vpn_load( config );
+ 
+ 	// create site modal dialog
+@@ -280,7 +280,7 @@
+ 		return;
+ 
+ 	CONFIG config;
+-	config.set_id( i->text().toAscii() );
++	config.set_id( i->text().toLatin1() );
+ 	qikea.manager.file_vpn_del( config );
+ 
+ 	delete i;
+@@ -312,11 +312,11 @@
+ 	site_name_mangle( modName );
+ 
+ 	CONFIG config;
+-	config.set_id( oldName.toAscii() );
++	config.set_id( oldName.toLatin1() );
+ 	qikea.manager.file_vpn_load( config );
+ 	qikea.manager.file_vpn_del( config );
+ 
+-	config.set_id( modName.toAscii() );
++	config.set_id( modName.toLatin1() );
+ 	qikea.manager.file_vpn_save( config );
+ 
+ 	i->setText( modName );
+@@ -346,9 +346,9 @@
+ 	bool need_certs = false;
+ 
+ 	if( !loadPath.contains( ".pcf", Qt::CaseInsensitive ) )
+-		qikea.manager.file_vpn_load( config, loadPath.toAscii(), false );
++		qikea.manager.file_vpn_load( config, loadPath.toLatin1(), false );
+ 	else
+-		qikea.manager.file_pcf_load( config, loadPath.toAscii(), need_certs );
++		qikea.manager.file_pcf_load( config, loadPath.toLatin1(), need_certs );
+ 
+ 	// determine file name
+ 
+@@ -361,7 +361,7 @@
+ 
+ 	// save the site config
+ 
+-	config.set_id( siteName.toAscii() );
++	config.set_id( siteName.toLatin1() );
+ 	qikea.manager.file_vpn_save( config );
+ 
+ 	// create icon for site
+@@ -402,7 +402,7 @@
+ 	// load site config
+ 
+ 	CONFIG config;
+-	config.set_id( i->text().toAscii() );
++	config.set_id( i->text().toLatin1() );
+ 	qikea.manager.file_vpn_load( config );
+ 
+ 	// get the output path
+@@ -419,7 +419,7 @@
+ 	if( !savePath.length() )
+ 		return;
+ 
+-	qikea.manager.file_vpn_save( config, savePath.toAscii() );
++	qikea.manager.file_vpn_save( config, savePath.toLatin1() );
+ }
+ 
+ void _qikeaRoot::showAbout()
+diff -ruN ike/source/qikea/site.cpp ike/source/qikea/site.cpp
+--- ike/source/qikea/site.cpp	2012-12-15 17:08:51.000000000 -0500
++++ ike/source/qikea/site.cpp	2018-07-12 10:02:43.434912462 -0400
+@@ -837,7 +837,7 @@
+ 	// remote name or address
+ 
+ 	config.set_string( "network-host",
+-		lineEditHost->text().toAscii(),
++		lineEditHost->text().toLatin1(),
+ 		lineEditHost->text().length() );
+ 
+ 	// remote ike port
+@@ -929,7 +929,7 @@
+ 			Address = Address.replace( ' ', "" );
+ 
+ 			config.set_string( "client-ip-addr",
+-				Address.toAscii(),
++				Address.toLatin1(),
+ 				Address.length() );
+ 
+ 			// adapter netmask
+@@ -938,7 +938,7 @@
+ 			Netmask = Netmask.replace( ' ', "" );
+ 
+ 			config.set_string( "client-ip-mask",
+-				Netmask.toAscii(),
++				Netmask.toLatin1(),
+ 				Netmask.length() );
+ 		}
+ 	}
+@@ -948,7 +948,7 @@
+ 	// nat traversal mode
+ 
+ 	config.set_string( "network-natt-mode",
+-		comboBoxNATTMode->currentText().toAscii(),
++		comboBoxNATTMode->currentText().toLatin1(),
+ 		comboBoxNATTMode->currentText().length() );
+ 
+ 	// natt not disabled
+@@ -971,7 +971,7 @@
+ 	// ike fragment mode
+ 
+ 	config.set_string( "network-frag-mode",
+-		comboBoxFragMode->currentText().toAscii(),
++		comboBoxFragMode->currentText().toLatin1(),
+ 		comboBoxFragMode->currentText().length() );
+ 
+ 	// ike frag not disabled
+@@ -1040,33 +1040,33 @@
+ 			DNSServer = lineEditDNSServer1->text();
+ 			DNSServer = DNSServer.replace( ' ', "" );
+ 
+-			if( inet_addr( DNSServer.toAscii() ) )
++			if( inet_addr( DNSServer.toLatin1() ) )
+ 				config.add_string( "client-dns-addr",
+-					DNSServer.toAscii(),
++					DNSServer.toLatin1(),
+ 					DNSServer.length() );
+ 
+ 			DNSServer = lineEditDNSServer2->text();
+ 			DNSServer = DNSServer.replace( ' ', "" );
+ 
+-			if( inet_addr( DNSServer.toAscii() ) )
++			if( inet_addr( DNSServer.toLatin1() ) )
+ 				config.add_string( "client-dns-addr",
+-					DNSServer.toAscii(),
++					DNSServer.toLatin1(),
+ 					DNSServer.length() );
+ 
+ 			DNSServer = lineEditDNSServer3->text();
+ 			DNSServer = DNSServer.replace( ' ', "" );
+ 
+-			if( inet_addr( DNSServer.toAscii() ) )
++			if( inet_addr( DNSServer.toLatin1() ) )
+ 				config.add_string( "client-dns-addr",
+-					DNSServer.toAscii(),
++					DNSServer.toLatin1(),
+ 					DNSServer.length() );
+ 
+ 			DNSServer = lineEditDNSServer4->text();
+ 			DNSServer = DNSServer.replace( ' ', "" );
+ 
+-			if( inet_addr( DNSServer.toAscii() ) )
++			if( inet_addr( DNSServer.toLatin1() ) )
+ 				config.add_string( "client-dns-addr",
+-					DNSServer.toAscii(),
++					DNSServer.toLatin1(),
+ 					DNSServer.length() );
+ 		}
+ 
+@@ -1085,7 +1085,7 @@
+ 			config.del( "client-dns-suffix" );
+ 
+ 			config.set_string( "client-dns-suffix",
+-				lineEditDNSSuffix->text().toAscii(),
++				lineEditDNSSuffix->text().toLatin1(),
+ 				lineEditDNSSuffix->text().length() );
+ 		}
+ 	}
+@@ -1157,7 +1157,7 @@
+ 
+ 	if( lineEditLocalIDData->isEnabled() )
+ 		config.set_string( "ident-client-data",
+-			lineEditLocalIDData->text().toAscii(),
++			lineEditLocalIDData->text().toLatin1(),
+ 			lineEditLocalIDData->text().length() );
+ 	else
+ 		config.del( "ident-client-data" );
+@@ -1194,7 +1194,7 @@
+ 
+ 	if( lineEditRemoteIDData->isEnabled() )
+ 		config.set_string( "ident-server-data",
+-			lineEditRemoteIDData->text().toAscii(),
++			lineEditRemoteIDData->text().toLatin1(),
+ 			lineEditRemoteIDData->text().length() );
+ 	else
+ 		config.del( "ident-server-data" );
+@@ -1204,11 +1204,11 @@
+ 	if( pathCAFile.size() )
+ 	{
+ 		config.set_string( "auth-server-cert-name",
+-			lineEditCAName->text().toAscii(),
++			lineEditCAName->text().toLatin1(),
+ 			lineEditCAName->text().length() );
+ 
+ 		BDATA fileData;
+-		fileData.file_load( pathCAFile.toAscii() );
++		fileData.file_load( pathCAFile.toLatin1() );
+ 		config.set_binary( "auth-server-cert-data",
+ 			fileData );
+ 	}
+@@ -1224,11 +1224,11 @@
+ 	if( pathCertFile.size() )
+ 	{
+ 		config.set_string( "auth-client-cert-name",
+-			lineEditCertName->text().toAscii(),
++			lineEditCertName->text().toLatin1(),
+ 			lineEditCertName->text().length() );
+ 
+ 		BDATA fileData;
+-		fileData.file_load( pathCertFile.toAscii() );
++		fileData.file_load( pathCertFile.toLatin1() );
+ 		config.set_binary( "auth-client-cert-data",
+ 			fileData );
+ 	}
+@@ -1244,11 +1244,11 @@
+ 	if( pathPKeyFile.size() )
+ 	{
+ 		config.set_string( "auth-client-key-name",
+-			lineEditPKeyName->text().toAscii(),
++			lineEditPKeyName->text().toLatin1(),
+ 			lineEditPKeyName->text().length() );
+ 
+ 		BDATA fileData;
+-		fileData.file_load( pathPKeyFile.toAscii() );
++		fileData.file_load( pathPKeyFile.toLatin1() );
+ 		config.set_binary( "auth-client-key-data",
+ 			fileData );
+ 	}
+@@ -1265,7 +1265,7 @@
+ 	{
+ 		BDATA psk;
+ 		psk.set(
+-			( const char * ) lineEditPSK->text().toAscii(),
++			( const char * ) lineEditPSK->text().toLatin1(),
+ 			lineEditPSK->text().length() );
+ 		config.set_binary( "auth-mutual-psk", psk );
+ 	}
+@@ -1293,7 +1293,7 @@
+ 	// phase1 cipher algorithm
+ 
+ 	config.set_string( "phase1-cipher",
+-		comboBoxP1Cipher->currentText().toAscii(),
++		comboBoxP1Cipher->currentText().toLatin1(),
+ 		comboBoxP1Cipher->currentText().length() );
+ 
+ 	// phase1 cipher key length
+@@ -1304,7 +1304,7 @@
+ 	// phase1 hash algorithm
+ 
+ 	config.set_string( "phase1-hash",
+-		comboBoxP1Hash->currentText().toAscii(),
++		comboBoxP1Hash->currentText().toLatin1(),
+ 		comboBoxP1Hash->currentText().length() );
+ 
+ 	// phase1 key life time
+@@ -1327,7 +1327,7 @@
+ 	// phase2 trasform algorithm
+ 
+ 	config.set_string( "phase2-transform",
+-		comboBoxP2Transform->currentText().toAscii(),
++		comboBoxP2Transform->currentText().toLatin1(),
+ 		comboBoxP2Transform->currentText().length() );
+ 
+ 	// phase2 transform key length
+@@ -1338,7 +1338,7 @@
+ 	// phase2 hmac algorithm
+ 
+ 	config.set_string( "phase2-hmac",
+-		comboBoxP2HMAC->currentText().toAscii(),
++		comboBoxP2HMAC->currentText().toLatin1(),
+ 		comboBoxP2HMAC->currentText().length() );
+ 
+ 	// phase2 pfs group
+@@ -1360,13 +1360,13 @@
+ 	// ipcomp transform algorithm
+ 
+ 	config.set_string( "ipcomp-transform",
+-		comboBoxP2Compress->currentText().toAscii(),
++		comboBoxP2Compress->currentText().toLatin1(),
+ 		comboBoxP2Compress->currentText().length() );
+ 
+ 	// policy level option
+ 
+ 	config.set_string( "policy-level",
+-		comboBoxPolicyLevel->currentText().toAscii(),
++		comboBoxPolicyLevel->currentText().toLatin1(),
+ 		comboBoxPolicyLevel->currentText().length() );
+ 
+ 	// policy nailed sa option
+@@ -1409,7 +1409,7 @@
+ 				// include
+ 
+ 				config.add_string( "policy-list-include",
+-					i->text( 0 ).toAscii(),
++					i->text( 0 ).toLatin1(),
+ 					i->text( 0 ).length() );
+ 			}
+ 
+@@ -1418,7 +1418,7 @@
+ 				// exlcude
+ 
+ 				config.add_string( "policy-list-exclude",
+-					i->text( 0 ).toAscii(),
++					i->text( 0 ).toLatin1(),
+ 					i->text( 0 ).length() );
+ 			}
+ 		}
+@@ -1456,7 +1456,7 @@
+ 
+ 			QString Address = lineEditAddress->text();
+ 			Address = Address.replace( ' ', "" );
+-			uint32_t addr = inet_addr( Address.toAscii() );
++			uint32_t addr = inet_addr( Address.toLatin1() );
+ 
+ 			if( !addr || ( addr == INADDR_NONE ) )
+ 				errmsg = "Please enter valid virtual adapter address.";
+@@ -1465,7 +1465,7 @@
+ 
+ 			QString Netmask = lineEditNetmask->text();
+ 			Netmask = Netmask.replace( ' ', "" );
+-			uint32_t mask = inet_addr( Netmask.toAscii() );
++			uint32_t mask = inet_addr( Netmask.toLatin1() );
+ 
+ 			if( !mask )
+ 				errmsg = "Please enter valid virtual adapter netmask.";
+@@ -1487,7 +1487,7 @@
+ 
+ 			DNSServer = lineEditDNSServer1->text();
+ 			DNSServer = DNSServer.replace( ' ', "" );
+-			addr = inet_addr( DNSServer.toAscii() );
++			addr = inet_addr( DNSServer.toLatin1() );
+ 
+ 			if( addr && ( addr == INADDR_NONE ) )
+ 				errmsg = "Please enter valid DNS server #1 address.";
+diff -ruN ike/source/qikea/topology.cpp ike/source/qikea/topology.cpp
+--- ike/source/qikea/topology.cpp	2010-06-27 17:02:52.000000000 -0400
++++ ike/source/qikea/topology.cpp	2018-07-12 10:02:43.845912456 -0400
+@@ -49,8 +49,8 @@
+ 	QString Netmask = lineEditNetmask->text();
+ 	Netmask = Netmask.replace( ' ', "" );
+ 
+-	in_addr_t addr = ntohl( inet_addr( Address.toAscii() ) );
+-	in_addr_t mask = ntohl( inet_addr( Netmask.toAscii() ) );
++	in_addr_t addr = ntohl( inet_addr( Address.toLatin1() ) );
++	in_addr_t mask = ntohl( inet_addr( Netmask.toLatin1() ) );
+ 
+ 	// verify the netmask
+ 
+diff -ruN ike/source/qikec/CMakeLists.txt ike/source/qikec/CMakeLists.txt
+--- ike/source/qikec/CMakeLists.txt	2012-11-28 00:53:09.000000000 -0500
++++ ike/source/qikec/CMakeLists.txt	2018-07-12 09:54:05.075919975 -0400
+@@ -22,19 +22,17 @@
+ 	${IKE_SOURCE_DIR}/source/libip
+ 	${QT_LIBRARY_DIR} )
+ 
+-include( ${QT_USE_FILE} )
+-
+-qt4_wrap_ui(
++qt5_wrap_ui(
+ 	UIH_FILES
+ 	banner.ui
+ 	filepass.ui
+ 	root.ui )
+ 
+-qt4_wrap_cpp(
++qt5_wrap_cpp(
+ 	CXX_FILES
+ 	qikec.h )
+ 
+-qt4_add_resources(
++qt5_add_resources(
+ 	QRC_FILES
+ 	qikec.qrc )
+ 
+@@ -55,7 +53,7 @@
+ 	ss_log
+ 	crypto
+ 	pthread
+-	${QT_LIBRARIES} )
++	Qt5::Widgets )
+ 
+ if( APPLE )
+ 
+diff -ruN ike/source/qikec/qikec.cpp ike/source/qikec/qikec.cpp
+--- ike/source/qikec/qikec.cpp	2013-04-06 15:57:27.000000000 -0400
++++ ike/source/qikec/qikec.cpp	2018-07-12 10:02:52.988912324 -0400
+@@ -105,7 +105,7 @@
+ 
+ 	username.del();
+ 	username.set(
+-		( const char * ) data.text.toAscii(), data.text.length() );
++		( const char * ) data.text.toLatin1(), data.text.length() );
+ 
+ 	return true;
+ }
+@@ -122,7 +122,7 @@
+ 
+ 	password.del();
+ 	password.set(
+-		( const char * ) data.text.toAscii(), data.text.length() );
++		( const char * ) data.text.toLatin1(), data.text.length() );
+ 
+ 	return true;
+ }
+@@ -144,7 +144,7 @@
+ 	QString text = PassData.password;
+ 	fpass.del();
+ 	fpass.set(
+-		( const char * ) text.toAscii(), text.length() );
++		( const char * ) text.toLatin1(), text.length() );
+ 
+ 	return true;
+ }
