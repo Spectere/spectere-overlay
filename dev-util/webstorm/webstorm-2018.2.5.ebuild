@@ -21,7 +21,7 @@ QA_PREBUILT="opt/${PN}-${SLOT}/*"
 
 BASENAME="webstorm"
 
-S="${WORKDIR}/WebStorm-182.4505.50"
+S="${WORKDIR}/WebStorm-182.4892.25"
 
 src_prepare() {
 	default
