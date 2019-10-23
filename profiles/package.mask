@@ -1,2 +1,5 @@
+# Use Gentoo's dotnet overlay instead.
+# https://github.com/gentoo/dotnet/
 dev-dotnet/dotnetcore-sdk-bin
 dev-dotnet/dotnetcore-sdk-sxs-bin
+
