@@ -1,0 +1,2 @@
+dev-dotnet/dotnetcore-sdk-bin
+dev-dotnet/dotnetcore-sdk-sxs-bin
